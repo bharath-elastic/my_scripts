@@ -6,19 +6,16 @@ from elasticsearch_dsl import Search
 from datetime import timedelta
 from datetime import datetime
 from datetime import date
+from argparse import ArgumentParser
 
-es = Elasticsearch()
-timefield = "@timestamp"
-source_prefix = "base-"
-target_postfix = f"-{date.today()}"
-indices = [
-        'auditbeat', 'filebeat', 'packetbeat',
-        'winlogbeat', 'auditbeat-bob', 'packetbeat-bob'
-        ]
-source_indices = [source_prefix + index for index in indices]
-target_indices = [index + target_postfix for index in indices]
-index_zip = zip(source_indices, target_indices)
-
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument('index', help='time series index name to shift')
+    parser.add_argument('target', help='target index name for shifted docs')
+    parser.add_argument('-t', '--time-field', default='@timestamp',
+            help='time field format (default=@timestamp)')
+    args = parser.parse_args()
+    return args
 
 def latest_time(index_name, timefield="@timestamp"):
     s = Search(using=es, index=index_name)
@@ -45,6 +42,7 @@ def set_index(docs, target_index):
         yield doc
 
 
-for source,  target in index_zip:
-    shift = get_shift(latest_time(source))
-    b = bulk(es, timeshift(set_index(scan(es, index=source), target), shift))
+es = Elasticsearch()
+args = parse_args()
+shift = get_shift(latest_time(args.index))
+b = bulk(es, timeshift(set_index(scan(es, index=args.index), args.target), shift))
