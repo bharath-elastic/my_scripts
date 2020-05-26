@@ -5,6 +5,7 @@ from dateutil.parser import parse
 from elasticsearch_dsl import Search
 from datetime import timedelta
 from datetime import datetime
+from dateutil.parser import parse as dateparse
 from datetime import date
 from argparse import ArgumentParser
 
@@ -17,9 +18,9 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def latest_time(index_name, timefield="@timestamp"):
+def latest_time(index_name):
     s = Search(using=es, index=index_name)
-    s.aggs.metric('latest', 'max', field=timefield)
+    s.aggs.metric('latest', 'max', field=args.time_field)
     r = s.execute()
     return r.aggregations.latest.value
 
@@ -31,8 +32,8 @@ def get_shift(latest):
 
 def timeshift(docs, shift):
     for doc in docs:
-        doc['_source'][timefield] = datetime.fromisoformat(
-                    doc['_source'][timefield]) + shift
+        doc['_source'][args.time_field] = dateparse(
+                    doc['_source'][args.time_field]) + shift
         yield doc
 
 
