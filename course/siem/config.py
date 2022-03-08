@@ -1,0 +1,4 @@
+esconfig = {
+    'cloud_id': 'First_look_80:ZXVyb3BlLXdlc3QxLmdjcC5jbG91ZC5lcy5pbyRkMTgyZTBiYTM3ZGM0YTEwYWNiZDJjMzYzOGU4MzEzMSQ1YmM3OWMzYzFkNTE0YWFiOGM3M2I3MTdmZWI0ZjUyOA==',
+    'api_key': 'ZDdmc3NINEJtdGlFbHRyd3dkZXg6SlFOQ28tVmZUR083TUVSbGE0YkJWUQ=='
+    }
